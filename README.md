@@ -102,3 +102,4 @@ Mireia Sempere, Maria Castellanos, Irene Castrillo
 Xarxes Neuronals i Aprenentatge Profund
 Grau d'Enginyeria de Dades, 
 UAB, 2024
+
