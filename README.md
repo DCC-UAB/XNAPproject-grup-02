@@ -8,10 +8,7 @@ El que fa aquesta transferència d'estils és que pren una imatge de referència
 
 El projecte utilitza un conjunt de dades de 42.129 imatges proporcionades per 195 artistes, que es pot trobar al següent enllaç: https://paperswithcode.com/dataset/wikiart. Això proporciona una gran varietat d'estils visuals per entrenar el model.
 
-Es oidebconsultar els enllaços proporcionats al projecte:
-
-- https://github.com/HalbertCH/IEContraAST
-- https://github.com/elleryqueenhomels/arbitrary_style_transfer/blob/master/README.md
+El starting-point on ens vasem per realitzar l'implementació esta definit en el github ENLAZEEE
 
 Aquests enllaços et portaran als repositoris de GitHub relacionats amb el projecte. Potser hi trobaràs codi, documentació i altres recursos que t'ajudaran a entendre millor com es duu a terme la transferència d'estils en aquest context específic.
 
