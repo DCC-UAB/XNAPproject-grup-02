@@ -2,6 +2,13 @@
 # Neural Style transfer (NST)
 
 ## Introducció
+
+En les darreres dècades, els avenços en l'aprenentatge profund (deep learning) han revolucionat el camp del processament d'imatges, obrint noves possibilitats creatives i tecnològiques. Una de les aplicacions més fascinants i creativa és la transferència d'estil, un procés pel qual el contingut d'una imatge es fusiona amb l'estil d'una altra, generant resultats visualment sorprenents. 
+
+Aquest treball explora i analitza un metode en concret amb l'objectiu de proporcionar una comprensió profunda dels mètodes existents, les seves aplicacions, i els reptes associats. Es començarà amb una revisió exhaustiva dels fonaments teòrics i del algoritma de la transferència d'estil.Finalment, es presentarà un estudi de cas pràctic en el qual s'aplicaran aquestes tècniques a un conjunt d'imatges específiques, analitzant els resultats obtinguts i discutint les possibles aplicacions futures d'aquesta tecnologia.
+
+----
+
 Aquest projecte és un projecte de Transferència d'estils en imatges de deep learning. Té com a objectiu principal transferir estils en imatges de vista de carrer, combinant característiques textuals i visuals.
 
 El que fa aquesta transferència d'estils és que pren una imatge de referència (anomenada "estil") i una altra imatge (anomenada "contingut"), i combina els aspectes visuals de l'estil amb el contingut de la imatge de manera que el resultat sembli que ha estat pintat amb l'estil de la imatge de referència. L'objectiu és aconseguir el millor resultat possible.
@@ -17,7 +24,18 @@ Aquests enllaços et portaran als repositoris de GitHub relacionats amb el proje
 
 
 ## Com funciona una NST?
-Les xarxes neuronals convolucionals (CNN) són el tipus de de xarxes neuronals més potent per a la classificació i l'anàlisi d'imatges. Les seves aplicacions han superat molts límits i s'ha demostrat que són l'element crític de moltes aplicacions habilitades per a l'aprenentatge profund d'avui en dia. A un nivell molt alt, les CNN poden aprendre les representacions a nivell de característiques internes de les imatges les quals s'alimenten. Són molt potents, i no només funcionen per a classificar imatges, sinó que també funcionen per la construcció d'imatges.
+
+### Introducció
+
+La transferència d'estil es va popularitzar amb els treballs pioners de Gatys et al. (2015), que van ser el primer en demostrar com una xarxa neuronal convolucional (CNN) podia descompondre i recombinar les característiques de contingut i estil de les imatges. Les CNN són el tipus de de xarxes neuronals més potent per a la classificació i l'anàlisi d'imatges. Les seves aplicacions han superat molts límits i s'ha demostrat que són l'element crític de moltes aplicacions habilitades per a l'aprenentatge profund d'avui en dia. A un nivell molt alt, les CNN poden aprendre les representacions a nivell de característiques internes de les imatges les quals s'alimenten. Són molt potents, i no només funcionen per a classificar imatges, sinó que també funcionen per la construcció d'imatges.
+
+Aquesta tècnica inicial, tot i ser potent, més endevant es van millorar els resultats amb altres xarxes. Des de llavors, s'han desenvolupat nombroses variacions i millores, incloent-hi les xarxes generatives per a la transferència en temps real, els models adaptatius multiestil i les xarxes adversaries generatives (GANs), entre d'altres.
+
+Tot i aixó, 
+
+
+L'objectiu d'aquest treball és proporcionar una visió integral i pràctica de la transferència d'estil en l'aprenentatge profund, contribuint al desenvolupament i a la comprensió d'aquest camp emergent i oferint eines útils per a la seva aplicació en diversos contextos creatius i tecnològics.
+
 
 Aquest projecte es tracta de generar imatges a partir d'una imatge amb contingut i una imatge amb un estil concret. Volem combinar-les de manera que el model entrenat generi una imatge que contingui el contingut de la imatge amb contingut i l'estil de la imatge de l'estil. Per tant, hem d'aconseguir un model amb el contingut i l'estil correctes. 
 
