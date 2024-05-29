@@ -205,4 +205,4 @@ if __name__ == "__main__":
     results_path = neural_style_transfer(optimization_config)
 
     # uncomment this if you want to create a video from images dumped during the optimization procedure
-    # create_video_from_intermediate_results(results_path, img_format)
+   # create_video_from_intermediate_results(results_path, img_format)
