@@ -7,6 +7,7 @@ from torch.autograd import Variable
 import numpy as np
 import os
 import argparse
+import wandb
 
 
 def build_loss(neural_net, optimizing_img, target_representations, content_feature_maps_index, style_feature_maps_indices, config):
@@ -28,6 +29,13 @@ def build_loss(neural_net, optimizing_img, target_representations, content_featu
 
     total_loss = config['content_weight'] * content_loss + config['style_weight'] * style_loss + config['tv_weight'] * tv_loss
 
+    wandb.log({
+        "content_loss": content_loss,
+        "style_loss": style_loss,
+        "tv_loss": tv_loss,
+        "total_loss": total_loss
+        })
+    
     return total_loss, content_loss, style_loss, tv_loss
 
 
@@ -84,26 +92,20 @@ def neural_style_transfer(config):
     target_style_representation = [utils.gram_matrix(x) for cnt, x in enumerate(style_img_set_of_feature_maps) if cnt in style_feature_maps_indices_names[0]]
     target_representations = [target_content_representation, target_style_representation]
 
-    # magic numbers in general are a big no no - some things in this code are left like this by design to avoid clutter
-    num_of_iterations = {
-        "lbfgs": 200,
-        "adam": 3000,
-    }
-
     #
     # Start of optimization procedure
     #
     if config['optimizer'] == 'adam':
-        optimizer = Adam((optimizing_img,), lr=1e1)
+        optimizer = Adam((optimizing_img,), lr=config["learning_rate"])
         tuning_step = make_tuning_step(neural_net, optimizer, target_representations, content_feature_maps_index_name[0], style_feature_maps_indices_names[0], config)
-        for cnt in range(num_of_iterations[config['optimizer']]):
+        for cnt in range(config["num_of_iterations"]):
             total_loss, content_loss, style_loss, tv_loss = tuning_step(optimizing_img)
             with torch.no_grad():
                 print(f'Adam | iteration: {cnt:03}, total loss={total_loss.item():12.4f}, content_loss={config["content_weight"] * content_loss.item():12.4f}, style loss={config["style_weight"] * style_loss.item():12.4f}, tv loss={config["tv_weight"] * tv_loss.item():12.4f}')
-                utils.save_and_maybe_display(optimizing_img, dump_path, config, cnt, num_of_iterations[config['optimizer']], should_display=False)
+                utils.save_and_maybe_display(optimizing_img, dump_path, config, cnt, config["num_of_iterations"], should_display=False)
     elif config['optimizer'] == 'lbfgs':
         # line_search_fn does not seem to have significant impact on result
-        optimizer = LBFGS((optimizing_img,), max_iter=num_of_iterations['lbfgs'], line_search_fn='strong_wolfe')
+        optimizer = LBFGS((optimizing_img,), max_iter=config["num_of_iterations"], line_search_fn='strong_wolfe')
         cnt = 0
 
         def closure():
@@ -115,7 +117,7 @@ def neural_style_transfer(config):
                 total_loss.backward()
             with torch.no_grad():
                 print(f'L-BFGS | iteration: {cnt:03}, total loss={total_loss.item():12.4f}, content_loss={config["content_weight"] * content_loss.item():12.4f}, style loss={config["style_weight"] * style_loss.item():12.4f}, tv loss={config["tv_weight"] * tv_loss.item():12.4f}')
-                utils.save_and_maybe_display(optimizing_img, dump_path, config, cnt, num_of_iterations[config['optimizer']], should_display=False)
+                utils.save_and_maybe_display(optimizing_img, dump_path, config, cnt, config["num_of_iterations"], should_display=False)
 
             cnt += 1
             return total_loss
@@ -129,10 +131,10 @@ if __name__ == "__main__":
     #
     # fixed args - don't change these unless you have a good reason
     #
-    default_resource_dir = os.path.join(os.path.dirname(__file__), 'data')
-    content_images_dir = os.path.join(default_resource_dir, 'content-images')
-    style_images_dir = os.path.join(default_resource_dir, 'style-images')
-    output_img_dir = os.path.join(default_resource_dir, 'output-images')
+    default_resource_dir = os.path.join(os.path.dirname(__file__), 'data_def')
+    content_images_dir = os.path.join(default_resource_dir, 'content')
+    style_images_dir = os.path.join(default_resource_dir, 'style')
+    output_img_dir = os.path.join(default_resource_dir, 'output')
     img_format = (4, '.jpg')  # saves images in the format: %04d.jpg
 
     #
@@ -141,16 +143,18 @@ if __name__ == "__main__":
     #
     parser = argparse.ArgumentParser()
     parser.add_argument("--content_img_name", type=str, help="content image name", default='figures.jpg')
-    parser.add_argument("--style_img_name", type=str, help="style image name", default='vg_starry_night.jpg')
+    parser.add_argument("--style_img_name", type=str, help="style image name", default='cubismo.jpeg')
     parser.add_argument("--height", type=int, help="height of content and style images", default=400)
 
     parser.add_argument("--content_weight", type=float, help="weight factor for content loss", default=1e5)
     parser.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)
     parser.add_argument("--tv_weight", type=float, help="weight factor for total variation loss", default=1e0)
 
-    parser.add_argument("--optimizer", type=str, choices=['lbfgs', 'adam'], default='lbfgs')
+    parser.add_argument("--optimizer", type=str, choices=['lbfgs', 'adam'], default='adam')
     parser.add_argument("--model", type=str, choices=['vgg16', 'vgg19'], default='vgg19')
     parser.add_argument("--init_method", type=str, choices=['random', 'content', 'style'], default='content')
+    parser.add_argument("--num_of_iterations", type=int, help="num of iterations", default=3)
+    parser.add_argument("--learning_rate", type=int, help="learning_rate", default=1e1)
     parser.add_argument("--saving_freq", type=int, help="saving frequency for intermediate images (-1 means only final)", default=-1)
     args = parser.parse_args()
 
@@ -173,6 +177,26 @@ if __name__ == "__main__":
     optimization_config['style_images_dir'] = style_images_dir
     optimization_config['output_img_dir'] = output_img_dir
     optimization_config['img_format'] = img_format
+
+
+    run = wandb.init(
+    project="Style Transfer",
+    notes="",
+    tags=[f"content_image: {optimization_config['content_img_name']}", 
+          f"style_image: {optimization_config['style_img_name']}",
+          f"content_weight: {optimization_config['content_weight']}",
+          f"style_weight: {optimization_config['style_weight']}",
+          f"tv_weight: {optimization_config['tv_weight']}",
+          f"optimizer: {optimization_config['optimizer']}",
+          f"model: {optimization_config['model']}",
+          f"saving_freq: {optimization_config['saving_freq']}",
+          f"learning_rate: {optimization_config['learning_rate']}" 
+        ]
+    )
+
+    config = wandb.config
+    config.learning_rate = optimization_config["learning_rate"]
+    config.epochs = optimization_config["num_of_iterations"]
 
     # original NST (Neural Style Transfer) algorithm (Gatys et al.)
     results_path = neural_style_transfer(optimization_config)
