@@ -3,6 +3,10 @@
 
 Al final fem el readme en un document a part que s'ens fa més facil manipular.
 
+com instalar l'entorn:
+python3 -m venv
+pip install-r requirements.txt
+
 ## Introducció
 
 En les darreres dècades, els avenços en l'aprenentatge profund (deep learning) han revolucionat el camp del processament d'imatges, obrint noves possibilitats creatives i tecnològiques. Una de les aplicacions més fascinants i creativa és la transferència d'estil, un procés pel qual el contingut d'una imatge es fusiona amb l'estil d'una altra, generant resultats visualment sorprenents. 
