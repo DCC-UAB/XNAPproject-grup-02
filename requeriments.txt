@@ -5,3 +5,8 @@ torchvision
 train
 utils
 tqdm
+cv2
+os
+argparse
+matplotlib
+subprocess
