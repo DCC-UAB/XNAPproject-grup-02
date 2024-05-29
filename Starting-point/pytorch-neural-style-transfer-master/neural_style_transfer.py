@@ -1,5 +1,7 @@
 import utils.utils as utils
 from utils.video_utils import create_video_from_intermediate_results
+#API key: 977562db4dc023790ad117d9a62ec93e4792b1a6
+
 
 import torch
 from torch.optim import Adam, LBFGS
@@ -8,6 +10,7 @@ import numpy as np
 import os
 import argparse
 import wandb
+
 
 
 def build_loss(neural_net, optimizing_img, target_representations, content_feature_maps_index, style_feature_maps_indices, config):
