@@ -1,6 +1,8 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/L30CyvB9)
 # Neural Style transfer (NST)
 
+Al final fem el readme en un document a part que s'jens fa mes facil manifular.
+
 ## Introducció
 
 En les darreres dècades, els avenços en l'aprenentatge profund (deep learning) han revolucionat el camp del processament d'imatges, obrint noves possibilitats creatives i tecnològiques. Una de les aplicacions més fascinants i creativa és la transferència d'estil, un procés pel qual el contingut d'una imatge es fusiona amb l'estil d'una altra, generant resultats visualment sorprenents. 
