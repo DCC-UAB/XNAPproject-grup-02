@@ -6,7 +6,5 @@ train
 utils
 tqdm
 opencv-python
-os
 argparse
 matplotlib
-subprocess
