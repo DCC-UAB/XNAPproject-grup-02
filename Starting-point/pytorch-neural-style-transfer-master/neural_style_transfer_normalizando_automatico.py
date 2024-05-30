@@ -11,18 +11,18 @@ import numpy as np
 import os
 import argparse
 import wandb
+# Definición de variables para mantener los máximos
+max_content_loss = 1.0
+max_style_loss = 1.0
+max_tv_loss = 1.0
 
 def build_loss(neural_net, optimizing_img, target_representations, content_feature_maps_index, style_feature_maps_indices, config):
-    # Estableciendo los máximos observados
-    max_content_loss = 15000.0
-    max_style_loss = 15000000.0
-    max_tv_loss = 70000000.0
-    
+    global max_content_loss, max_style_loss, max_tv_loss
+
     target_content_representation = target_representations[0]
     target_style_representation = target_representations[1]
 
     current_set_of_feature_maps = neural_net(optimizing_img)
-
     current_content_representation = current_set_of_feature_maps[content_feature_maps_index].squeeze(axis=0)
     content_loss = torch.nn.MSELoss(reduction='mean')(target_content_representation, current_content_representation)
 
@@ -34,22 +34,27 @@ def build_loss(neural_net, optimizing_img, target_representations, content_featu
 
     tv_loss = utils.total_variation(optimizing_img)
 
-    # Normalizando las pérdidas
+    # Actualizar máximos
+    max_content_loss = max(max_content_loss, content_loss.item())
+    max_style_loss = max(max_style_loss, style_loss.item())
+    max_tv_loss = max(max_tv_loss, tv_loss.item())
+
+    # Normalización en tiempo real
     normalized_content_loss = content_loss / max_content_loss
     normalized_style_loss = style_loss / max_style_loss
     normalized_tv_loss = tv_loss / max_tv_loss
-    
+
     total_loss = config['content_weight'] * normalized_content_loss + config['style_weight'] * normalized_style_loss + config['tv_weight'] * normalized_tv_loss
 
+    # Log en wandb
     wandb.log({
-        "content_loss": content_loss,
-        "style_loss": style_loss,
-        "tv_loss": tv_loss,
-        "total_loss": total_loss
-        })
-    
-    return total_loss, content_loss, style_loss, tv_loss
+        "content_loss": normalized_content_loss.item(),
+        "style_loss": normalized_style_loss.item(),
+        "tv_loss": normalized_tv_loss.item(),
+        "total_loss": total_loss.item()
+    })
 
+    return total_loss, normalized_content_loss, normalized_style_loss, normalized_tv_loss
 
 def make_tuning_step(neural_net, optimizer, target_representations, content_feature_maps_index, style_feature_maps_indices, config):
     # Builds function that performs a step in the tuning loop
