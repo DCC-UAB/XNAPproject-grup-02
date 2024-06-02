@@ -1,8 +1,8 @@
 import utils.utils as utils
 from utils.video_utils import create_video_from_intermediate_results
-#API key: 977562db4dc023790ad117d9a62ec93e4792b1a6
+# API MARÍA: 977562db4dc023790ad117d9a62ec93e4792b1a6
 # API MIMI; 70ea322aed851116c7091b20c2f61b7e2e47e88d
-# python3 neural_style_transfer.py --content_img_name figures.jpg --style_img_name impresionismo.jpg
+# python3 neural_style_transfer.py
 
 import torch
 from torch.optim import Adam, LBFGS
@@ -11,6 +11,7 @@ import numpy as np
 import os
 import argparse
 import wandb
+
 # Definición de variables para mantener los máximos
 max_content_loss = 1.0
 max_style_loss = 1.0
@@ -159,8 +160,8 @@ if __name__ == "__main__":
     # sorted so that the ones on the top are more likely to be changed than the ones on the bottom
     #
     parser = argparse.ArgumentParser()
-    parser.add_argument("--content_img_name", type=str, help="content image name", default='figures.jpg')
-    parser.add_argument("--style_img_name", type=str, help="style image name", default='cubismo.jpeg')
+    #parser.add_argument("--content_img_name", type=str, help="content image name", default='figures.jpg')
+    #parser.add_argument("--style_img_name", type=str, help="style image name", default='cubismo.jpeg')
     parser.add_argument("--height", type=int, help="height of content and style images", default=400)
 
     parser.add_argument("--content_weight", type=float, help="weight factor for content loss", default=1e5)
@@ -195,28 +196,30 @@ if __name__ == "__main__":
     optimization_config['output_img_dir'] = output_img_dir
     optimization_config['img_format'] = img_format
 
+    for style_image in os.listdir(style_images_dir):
+        for content_image in os.listdir(content_images_dir):
 
-    run = wandb.init(
-    project="Style Transfer",
-    notes="",
-    tags=[f"content_image: {optimization_config['content_img_name']}", 
-          f"style_image: {optimization_config['style_img_name']}",
-          f"content_weight: {optimization_config['content_weight']}",
-          f"style_weight: {optimization_config['style_weight']}",
-          f"tv_weight: {optimization_config['tv_weight']}",
-          f"optimizer: {optimization_config['optimizer']}",
-          f"model: {optimization_config['model']}",
-          f"saving_freq: {optimization_config['saving_freq']}",
-          f"learning_rate: {optimization_config['learning_rate']}" 
-        ]
-    )
+            run = wandb.init(
+            project="Style Transfer",
+            notes="",
+            tags=[f"content_image: {content_image}", 
+                f"style_image: {style_image}",
+                f"content_weight: {optimization_config['content_weight']}",
+                f"style_weight: {optimization_config['style_weight']}",
+                f"tv_weight: {optimization_config['tv_weight']}",
+                f"optimizer: {optimization_config['optimizer']}",
+                f"model: {optimization_config['model']}",
+                f"saving_freq: {optimization_config['saving_freq']}",
+                f"learning_rate: {optimization_config['learning_rate']}" 
+                ]
+            )
 
-    config = wandb.config
-    config.learning_rate = optimization_config["learning_rate"]
-    config.epochs = optimization_config["num_of_iterations"]
+            config = wandb.config
+            config.learning_rate = optimization_config["learning_rate"]
+            config.epochs = optimization_config["num_of_iterations"]
 
-    # original NST (Neural Style Transfer) algorithm (Gatys et al.)
-    results_path = neural_style_transfer(optimization_config)
+            # original NST (Neural Style Transfer) algorithm (Gatys et al.)
+            results_path = neural_style_transfer(optimization_config)
 
-    # uncomment this if you want to create a video from images dumped during the optimization procedure
-   # create_video_from_intermediate_results(results_path, img_format)
+            # uncomment this if you want to create a video from images dumped during the optimization procedure
+            # create_video_from_intermediate_results(results_path, img_format)
