@@ -15,10 +15,6 @@ import os
 import argparse
 import wandb
 
-# Definición de variables para mantener los máximos
-max_content_loss = 1.0
-max_style_loss = 1.0
-max_tv_loss = 1.0
 
 def build_loss(neural_net, optimizing_img, target_representations, content_feature_maps_index, style_feature_maps_indices, config):
     target_content_representation = target_representations[0]
@@ -156,8 +152,8 @@ if __name__ == "__main__":
     #parser.add_argument("--style_img_name", type=str, help="style image name", default='cubismo.jpeg')
     parser.add_argument("--height", type=int, help="height of content and style images", default=400)
 
-    parser.add_argument("--content_weight", type=float, help="weight factor for content loss", default=10e5)
-    parser.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)
+    parser.add_argument("--content_weight", type=float, help="weight factor for content loss", default=2e5)#1e5
+    parser.add_argument("--style_weight", type=float, help="weight factor for style loss", default=6e4)
     parser.add_argument("--tv_weight", type=float, help="weight factor for total variation loss", default=0)
 
     parser.add_argument("--optimizer", type=str, choices=['lbfgs', 'adam'], default='adam')
@@ -194,9 +190,10 @@ if __name__ == "__main__":
             optimization_config['content_img_name'] = content_image
             optimization_config['style_img_name'] = style_image
 
-            run = wandb.init(
+            with wandb.init(
             project="Style Transfer",
             notes="",
+            name = f"StyleTransfer_{content_image}_with_{style_image}",
             tags=[f"content_image: {content_image}", 
                 f"style_image: {style_image}",
                 f"content_weight: {optimization_config['content_weight']}",
@@ -206,15 +203,16 @@ if __name__ == "__main__":
                 f"model: {optimization_config['model']}",
                 f"saving_freq: {optimization_config['saving_freq']}",
                 f"learning_rate: {optimization_config['learning_rate']}" 
-                ]
-            )
+                ],
+            reinit=True
+            ) as run:
 
-            config = wandb.config
-            config.learning_rate = optimization_config["learning_rate"]
-            config.epochs = optimization_config["num_of_iterations"]
+                config = wandb.config
+                config.learning_rate = optimization_config["learning_rate"]
+                config.epochs = optimization_config["num_of_iterations"]
 
-            # original NST (Neural Style Transfer) algorithm (Gatys et al.)
-            results_path = neural_style_transfer(optimization_config)
+                # original NST (Neural Style Transfer) algorithm (Gatys et al.)
+                results_path = neural_style_transfer(optimization_config)
 
-            # uncomment this if you want to create a video from images dumped during the optimization procedure
-            # create_video_from_intermediate_results(results_path, img_format)
+                # uncomment this if you want to create a video from images dumped during the optimization procedure
+                # create_video_from_intermediate_results(results_path, img_format)
