@@ -49,9 +49,9 @@ def build_loss(neural_net, optimizing_img, target_representations, content_featu
 
     # Log en wandb
     wandb.log({
-        "content_loss": normalized_content_loss.item(),
-        "style_loss": normalized_style_loss.item(),
-        "tv_loss": normalized_tv_loss.item(),
+        "content_loss": config['content_weight'] * normalized_content_loss.item(),
+        "style_loss": config['style_weight'] * normalized_style_loss.item(),
+        "tv_loss": config['tv_weight'] * normalized_tv_loss.item(),
         "total_loss": total_loss.item()
     })
 
@@ -198,6 +198,9 @@ if __name__ == "__main__":
 
     for style_image in os.listdir(style_images_dir):
         for content_image in os.listdir(content_images_dir):
+
+            optimization_config['content_img_dir'] = content_images
+            optimization_config['content_imgs_dir'] = content_images
 
             run = wandb.init(
             project="Style Transfer",
