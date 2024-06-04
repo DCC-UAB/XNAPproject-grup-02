@@ -152,8 +152,8 @@ if __name__ == "__main__":
     #parser.add_argument("--style_img_name", type=str, help="style image name", default='cubismo.jpeg')
     parser.add_argument("--height", type=int, help="height of content and style images", default=400)
 
-    parser.add_argument("--content_weight", type=float, help="weight factor for content loss", default=10e5)#1e5
-    parser.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)
+    parser.add_argument("--content_weight", type=float, help="weight factor for content loss", default=30e6)#1e5 10e5
+    parser.add_argument("--style_weight", type=float, help="weight factor for style loss", default=3e4)#3e4
     parser.add_argument("--tv_weight", type=float, help="weight factor for total variation loss", default=0)
 
     parser.add_argument("--optimizer", type=str, choices=['lbfgs', 'adam'], default='adam')
